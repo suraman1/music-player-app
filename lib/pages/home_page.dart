@@ -3,8 +3,8 @@ import 'package:my_app/screens/home_screen.dart';
 import 'package:my_app/screens/library_screen.dart';
 import 'package:my_app/screens/profile_screen.dart';
 import 'package:my_app/screens/search_screen.dart';
+import 'package:my_app/services/music_service.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:my_app/theme/app_styles.dart';
 import 'package:my_app/widgets/drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,18 +16,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  final List<Widget> screens = [
+  late final MusicService service;
+  List<Widget> screens = [
     HomeScreen(),
     SearchScreen(),
     LibraryScreen(),
-    ProfileScreen()
+    ProfileScreen(),
   ];
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Music player'),
-        titleTextStyle: AppTextStyles.bodyLarge,
         actions: [
           IconButton(
             onPressed: () async {

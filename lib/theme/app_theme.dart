@@ -17,52 +17,9 @@ class AppTheme {
       error: AppColors.error,
     ),
 
-    textTheme: TextTheme(
-      displayLarge: AppTextStyles.displayLarge.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      displayMedium: AppTextStyles.displayMedium.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      displaySmall: AppTextStyles.displaySmall.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      headlineLarge: AppTextStyles.headlineLarge.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      headlineMedium: AppTextStyles.headlineMedium.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      headlineSmall: AppTextStyles.headlineSmall.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      titleLarge: AppTextStyles.titleLarge.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      titleMedium: AppTextStyles.titleMedium.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      titleSmall: AppTextStyles.titleSmall.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      bodyLarge: AppTextStyles.bodyLarge.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      bodyMedium: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      bodySmall: AppTextStyles.bodySmall.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      labelLarge: AppTextStyles.labelLarge.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      labelMedium: AppTextStyles.labelMedium.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      labelSmall: AppTextStyles.labelSmall.copyWith(
-        color: AppColors.textSecondary,
-      ),
+    textTheme: AppTextStyles.textTheme.apply(
+      bodyColor: Colors.black87,
+      displayColor: Colors.black87,
     ),
 
     appBarTheme: const AppBarTheme(
@@ -96,6 +53,15 @@ class AppTheme {
       thickness: 1,
     ),
 
+    sliderTheme: SliderThemeData(
+      activeTrackColor: Colors.blue,
+      inactiveTrackColor: Colors.grey[200],
+      trackHeight: 4,
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8),
+      overlayShape: RoundSliderOverlayShape(overlayRadius: 16),
+      
+    ),
+
     listTileTheme: const ListTileThemeData(
       iconColor: AppColors.icon,
       textColor: AppColors.textPrimary,
@@ -108,6 +74,12 @@ class AppTheme {
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.transparent,
+    ),
+
+    tabBarTheme: TabBarThemeData(
+      dividerColor: Colors.transparent,
+      indicatorColor: Colors.transparent,
+      indicatorSize: TabBarIndicatorSize.tab
     ),
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -132,52 +104,9 @@ class AppTheme {
       error: AppColors.error,
     ),
 
-textTheme: TextTheme(
-      displayLarge: AppTextStyles.displayLarge.copyWith(
-        color: Colors.black87,
-      ),
-      displayMedium: AppTextStyles.displayMedium.copyWith(
-        color: Colors.black87,
-      ),
-      displaySmall: AppTextStyles.displaySmall.copyWith(
-        color: Colors.black87,
-      ),
-      headlineLarge: AppTextStyles.headlineLarge.copyWith(
-        color: Colors.black87,
-      ),
-      headlineMedium: AppTextStyles.headlineMedium.copyWith(
-        color: Colors.black87,
-      ),
-      headlineSmall: AppTextStyles.headlineSmall.copyWith(
-        color: Colors.black87,
-      ),
-      titleLarge: AppTextStyles.titleLarge.copyWith(
-        color: Colors.black87,
-      ),
-      titleMedium: AppTextStyles.titleMedium.copyWith(
-        color: Colors.black87,
-      ),
-      titleSmall: AppTextStyles.titleSmall.copyWith(
-        color: Colors.black87,
-      ),
-      bodyLarge: AppTextStyles.bodyLarge.copyWith(
-        color: Colors.black87,
-      ),
-      bodyMedium: AppTextStyles.bodyMedium.copyWith(
-        color: Colors.black54,
-      ),
-      bodySmall: AppTextStyles.bodySmall.copyWith(
-        color: Colors.black54,
-      ),
-      labelLarge: AppTextStyles.labelLarge.copyWith(
-        color: Colors.black54,
-      ),
-      labelMedium: AppTextStyles.labelMedium.copyWith(
-        color: Colors.black54,
-      ),
-      labelSmall: AppTextStyles.labelSmall.copyWith(
-        color: Colors.black54,
-      ),
+    textTheme: AppTextStyles.textTheme.apply(
+      bodyColor: Colors.black87,
+      displayColor: Colors.black87
     ),
 
     appBarTheme: const AppBarTheme(
@@ -211,6 +140,18 @@ textTheme: TextTheme(
       thickness: 1,
     ),
 
+    sliderTheme: SliderThemeData(
+      activeTrackColor: Colors.blue,
+      inactiveTrackColor: Colors.grey[200],
+      trackHeight: 4,
+      thumbShape: RoundSliderThumbShape(
+        enabledThumbRadius: 8,
+      ),
+      overlayShape: RoundSliderOverlayShape(
+        overlayRadius: 16
+      )
+    ),
+
     listTileTheme: const ListTileThemeData(
       iconColor: Colors.black87,
       textColor: Colors.black87,
@@ -223,6 +164,13 @@ textTheme: TextTheme(
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.transparent,
+    ),
+
+    
+    tabBarTheme: TabBarThemeData(
+      dividerColor: Colors.transparent,
+      indicatorColor: Colors.transparent,
+      indicatorSize: TabBarIndicatorSize.tab,
     ),
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(

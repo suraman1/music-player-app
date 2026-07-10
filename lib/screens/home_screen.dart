@@ -22,11 +22,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Expanded(
             child: TabBarView(
-              children: [
-                AllSongPage(),
-                AlbumPage(),
-                ArtistPage()
-              ],
+              children: [AllSongPage(), AlbumPage(), ArtistPage()],
             ),
           ),
         ],

@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/providers/theme_provider.dart';
 import 'package:my_app/routes/router.dart';
 import 'package:my_app/routes/routes.dart';
-import 'package:my_app/theme/app_theme.dart';
+import 'package:my_app/services/music_service.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MusicService()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,12 +22,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp (
-      debugShowCheckedModeBanner: false,
-      title: 'Music player',
-      theme: AppTheme.darkTheme,
-      initialRoute: Routes.home,
-      onGenerateRoute: AppRouter.onGenerateRoute,
+    return Consumer<ThemeProvider>(
+      builder: (_, themeProvider, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Music player',
+          theme: themeProvider.currentTheme,
+          initialRoute: Routes.splash,
+          onGenerateRoute: AppRouter.onGenerateRoute,
+        );
+      },
     );
   }
 }

@@ -11,7 +11,7 @@ class SearchBar extends StatelessWidget {
     return TextField(decoration: InputDecoration(
       prefixIcon: prefixIcon,
       hint: Text(text, style: TextStyle(color: Colors.black),),
-      hintStyle: AppTextStyles.bodyMedium,
+      hintStyle: AppTextStyles.textTheme.bodySmall,
       border: OutlineInputBorder (
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.zero

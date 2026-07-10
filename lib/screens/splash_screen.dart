@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/routes/routes.dart';
 import 'package:my_app/services/music_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -47,6 +48,13 @@ class _SplashScreenState extends State<SplashScreen> {
             },
             child: const Text('Try Again'),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await openAppSettings();
+            },
+          child: const Text('Open Settings'),
+),
           TextButton(
             onPressed: () {
               Navigator.pop(context);

@@ -1,6 +1,7 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 enum RepeatMode { on, off, all }
@@ -40,16 +41,32 @@ class MusicService extends ChangeNotifier {
 
   Future<void> initialize() async {
     if (_isIntialized) return;
-    try {
-      PermissionStatus status = await Permission.audio.request();
 
-      if (status.isDenied) {
+    try {
+      PermissionStatus status;
+
+      if (Platform.isAndroid) {
+        if (await Permission.audio.isGranted) {
+          status = PermissionStatus.granted;
+        } else {
+          status = await Permission.audio.request();
+
+          // Android 12 and below
+          if (!status.isGranted) {
+            status = await Permission.storage.request();
+          }
+        }
+      } else {
+        status = await Permission.audio.request();
+      }
+
+      _permissionGranted = status.isGranted;
+
+      if (!_permissionGranted) {
         _isIntialized = true;
         notifyListeners();
         return;
       }
-
-      _permissionGranted = true;
 
       _songs = await audioQuery.querySongs(
         sortType: SongSortType.TITLE,
@@ -63,14 +80,18 @@ class MusicService extends ChangeNotifier {
         uriType: UriType.EXTERNAL,
       );
 
+      _isIntialized = true;
+      notifyListeners();
+
       if (kDebugMode) {
-        debugPrint('Loaded songs ${_songs.length}');
-        debugPrint('Loaded albums ${_albums.length}');
+        debugPrint('Loaded songs: ${_songs.length}');
+        debugPrint('Loaded albums: ${_albums.length}');
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('Error loading songs $e');
+        debugPrint('Error loading songs: $e');
       }
+
       _isIntialized = true;
       notifyListeners();
     }

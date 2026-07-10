@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/services/music_service.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_query_pluse/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 class AllSongPage extends StatelessWidget {

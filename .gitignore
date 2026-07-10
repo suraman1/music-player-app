@@ -46,7 +46,9 @@ app.*.map.json
 /android/app/release
 
 
-.macos/
-.windwos/
-.linux/
-.web/
+devtools_options.yaml
+/macos/
+/windows/
+/linux/
+/web/
+/ios/

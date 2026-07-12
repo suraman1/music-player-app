@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:my_app/routes/routes.dart';
 import 'package:my_app/services/music_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,25 +12,51 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  final MusicService musicService = MusicService();
+class _SplashScreenState extends State<SplashScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _loadSongs();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSongs();
+      debugPrint('In init state');
+    });
+  }
+
+  @override
+  void didChangeAppLifeCycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      final musicService = context.read<MusicService>();
+
+      await musicService.initialize();
+
+      if (musicService.permissionGranted) {
+        if (mounted) {
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, Routes.home);
+        }
+      }
+    }
   }
 
   Future<void> _loadSongs() async {
-    final musicService = context.read<MusicService>();
-    await musicService.initialize();
+    try {
+      final musicService = context.read<MusicService>();
+      await musicService.initialize();
 
-    if (!mounted) return;
-
-    if (musicService.permissionGranted) {
-      Navigator.pushReplacementNamed(context, Routes.home);
-    } else {
       if (!mounted) return;
-      _showPermissionDeniedDialog();
+
+      if (musicService.permissionGranted) {
+        debugPrint('to go home ');
+        Navigator.pushReplacementNamed(context, Routes.home);
+      } else {
+        if (!mounted) return;
+        debugPrint('debug show ');
+        _showPermissionDeniedDialog();
+      }
+    } catch (e) {
+      debugPrint('Splash $e');
     }
   }
 
@@ -42,22 +69,14 @@ class _SplashScreenState extends State<SplashScreen> {
         content: const Text('Music player needs access to your audio files.'),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _loadSongs();
-            },
-            child: const Text('Try Again'),
-          ),
-          TextButton(
             onPressed: () async {
-              Navigator.pop(context);
               await openAppSettings();
             },
-          child: const Text('Open Settings'),
-),
+            child: const Text('Open Settings'),
+          ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              SystemNavigator.pop();
             },
             child: const Text('Exit'),
           ),
@@ -87,5 +106,11 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }

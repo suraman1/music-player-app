@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 enum RepeatMode { on, off, all }
 
@@ -12,7 +10,7 @@ class MusicService extends ChangeNotifier {
   bool _isIntialized = false;
   bool _permissionGranted = false;
   final AudioPlayer _audioPlayer = AudioPlayer();
-  final OnAudioQuery audioQuery = OnAudioQuery();
+  final OnAudioQuery _audioQuery = OnAudioQuery();
 
   SongModel? _currentSong;
   List<SongModel> _currentPlaylist = [];
@@ -20,6 +18,10 @@ class MusicService extends ChangeNotifier {
   bool _isShuffled = false;
   bool _isRepeated = false;
   RepeatMode _repeatMode = RepeatMode.off;
+
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
+  double _previousVolume = 0;
 
   List<SongModel> get songs => _songs;
   List<AlbumModel> get albums => _albums;
@@ -33,48 +35,49 @@ class MusicService extends ChangeNotifier {
   bool get isRepeated => _isRepeated;
   RepeatMode get repeatMode => _repeatMode;
 
+  Duration get position => _position;
+  Duration get duration => _duration;
+
   Stream<Duration> get positionStream => _audioPlayer.positionStream;
   Stream<Duration?> get durationStream => _audioPlayer.durationStream;
-  Stream<double> get volumeStream => _audioPlayer.volumeStream;
-  Stream<PlayerState> get playerStateStream => _audioPlayer.playerStateStream;
-  Stream<bool> get playingStream => _audioPlayer.playingStream;
+
+  bool get isPlaying => _audioPlayer.playing;
+  double get previousVolume => _audioPlayer.volume;
+  bool get isMute => _audioPlayer.volume == 0;
+
+  MusicService() {
+    _audioPlayer.playerStateStream.listen((_) {
+      notifyListeners();
+    });
+  }
 
   Future<void> initialize() async {
     if (_isIntialized) return;
 
     try {
-      PermissionStatus status;
+      final hasPermission = await _audioQuery.permissionsStatus();
 
-      if (Platform.isAndroid) {
-        if (await Permission.audio.isGranted) {
-          status = PermissionStatus.granted;
-        } else {
-          status = await Permission.audio.request();
+      if (!hasPermission) {
+        final requested = await _audioQuery.permissionsRequest();
 
-          // Android 12 and below
-          if (!status.isGranted) {
-            status = await Permission.storage.request();
-          }
+        if (!requested) {
+          _permissionGranted = false;
+          _isIntialized = true;
+          notifyListeners();
+          return;
         }
-      } else {
-        status = await Permission.audio.request();
       }
 
-      _permissionGranted = status.isGranted;
+      _permissionGranted = true;
+      notifyListeners();
 
-      if (!_permissionGranted) {
-        _isIntialized = true;
-        notifyListeners();
-        return;
-      }
-
-      _songs = await audioQuery.querySongs(
+      _songs = await _audioQuery.querySongs(
         sortType: SongSortType.TITLE,
         orderType: OrderType.ASC_OR_SMALLER,
         uriType: UriType.EXTERNAL,
       );
 
-      _albums = await audioQuery.queryAlbums(
+      _albums = await _audioQuery.queryAlbums(
         sortType: AlbumSortType.ARTIST,
         orderType: OrderType.ASC_OR_SMALLER,
         uriType: UriType.EXTERNAL,
@@ -82,16 +85,10 @@ class MusicService extends ChangeNotifier {
 
       _isIntialized = true;
       notifyListeners();
-
-      if (kDebugMode) {
-        debugPrint('Loaded songs: ${_songs.length}');
-        debugPrint('Loaded albums: ${_albums.length}');
-      }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('Error loading songs: $e');
+        debugPrint("Initialization error: $e");
       }
-
       _isIntialized = true;
       notifyListeners();
     }
@@ -126,25 +123,33 @@ class MusicService extends ChangeNotifier {
     await playSong(_currentPlaylist[index], playlist: _currentPlaylist);
   }
 
-  Future<void> playPause() async {
+  Future<void> playPause(SongModel song) async {
     if (_audioPlayer.playing) {
-      await _audioPlayer.stop();
+      await _audioPlayer.pause();
     } else {
-      if (_currentSong == null && _songs.isNotEmpty) {
-        await playSong(_songs[0]);
-      } else {
-        await _audioPlayer.play();
-      }
+      _currentSong = song;
+      await _audioPlayer.play();
     }
     notifyListeners();
+  }
+
+  Future<void> playAll(List<SongModel> songs) async {}
+
+  List<SongModel> getAllSongsFromAlbum(AlbumModel album) {
+    return _songs.where((song) => song.albumId == album.id).toList();
   }
 
   Future<void> seek(Duration position) async {
     await _audioPlayer.seek(position);
   }
 
-  Future<void> setVolume(double vol) async {
-    await _audioPlayer.setVolume(vol.clamp(0, 1));
+  Future<void> toggleVolume() async {
+    if (isMute) {
+      await _audioPlayer.setVolume(_previousVolume);
+    } else {
+      _previousVolume = _audioPlayer.volume;
+      _audioPlayer.setVolume(0.0);
+    }
     notifyListeners();
   }
 

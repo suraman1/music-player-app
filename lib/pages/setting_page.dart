@@ -5,6 +5,38 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: const Text('This is setting page')));
+    return Scaffold(
+      backgroundColor: Colors.grey,
+      appBar: AppBar(title: const Text('Settings')),
+      body: ListView(
+        children: [
+          ListTile(
+            title: const Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          ListTile(
+            title: const Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          ListTile(
+            title: const Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          ListTile(
+            title: const Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          const SizedBox(height: 8,),
+          ListTile(
+            title: const Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          ListTile(
+            title: const Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+        ],
+      ),
+    );
   }
 }

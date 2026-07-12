@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:my_app/providers/navigation_provider.dart';
 import 'package:my_app/screens/home_screen.dart';
 import 'package:my_app/screens/library_screen.dart';
 import 'package:my_app/screens/profile_screen.dart';
@@ -15,7 +17,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
   late final MusicService service;
   List<Widget> screens = [
     HomeScreen(),
@@ -24,9 +25,9 @@ class _HomePageState extends State<HomePage> {
     ProfileScreen(),
   ];
 
-
   @override
   Widget build(BuildContext context) {
+    final navigationProvider = context.watch<NavigationProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Music player'),
@@ -40,13 +41,12 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: screens[_currentIndex],
+      body: screens[navigationProvider.currentIndex],
       drawer: MyDrawer(),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: navigationProvider.currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          navigationProvider.changeIndex(index);
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

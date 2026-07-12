@@ -18,8 +18,8 @@ class AppTheme {
     ),
 
     textTheme: AppTextStyles.textTheme.apply(
-      bodyColor: Colors.black87,
-      displayColor: Colors.black87,
+      bodyColor: AppColors.textPrimary,
+      displayColor: AppColors.textPrimary
     ),
 
     appBarTheme: const AppBarTheme(
@@ -60,6 +60,18 @@ class AppTheme {
       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8),
       overlayShape: RoundSliderOverlayShape(overlayRadius: 16),
       
+    ),
+
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.surfacePrimary,
+      titleTextStyle: AppTextStyles.textTheme.titleLarge,
+      contentTextStyle: AppTextStyles.textTheme.titleLarge
+    ),
+
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: AppColors.primary,
+      circularTrackColor: AppColors.divider,
+      linearTrackColor: AppColors.divider
     ),
 
     listTileTheme: const ListTileThemeData(
@@ -150,6 +162,18 @@ class AppTheme {
       overlayShape: RoundSliderOverlayShape(
         overlayRadius: 16
       )
+    ),
+
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.surfaceSecondary,
+      titleTextStyle: AppTextStyles.textTheme.titleLarge,
+      contentTextStyle: AppTextStyles.textTheme.titleLarge,
+    ),
+
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: AppColors.primary,
+      circularTrackColor: AppColors.lightDivider,
+      linearTrackColor: AppColors.lightDivider,
     ),
 
     listTileTheme: const ListTileThemeData(

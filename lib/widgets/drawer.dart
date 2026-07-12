@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/providers/theme_provider.dart';
+import 'package:my_app/routes/routes.dart';
 import 'package:provider/provider.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -21,8 +22,12 @@ class _MyDrawerState extends State<MyDrawer> {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: const Text('Bob'),
-              accountEmail: const Text('bob@gmail.com'),
+              accountName: Text(
+                'Bob',
+               style: Theme.of(context).textTheme.bodyLarge),
+              accountEmail: Text('bob@gmail.com',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               currentAccountPicture: CircleAvatar(
                 radius: 28,
                 backgroundColor: Colors.yellow,
@@ -41,24 +46,34 @@ class _MyDrawerState extends State<MyDrawer> {
                 children: [
                   ListTile(
                     leading: Icon(Icons.settings),
-                    title: const Text('Setting'),
+                    title: Text('Settings', style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                     trailing: Icon(Icons.chevron_right),
+                    onTap: () => Navigator.pushNamed(context, Routes.settings),
                   ),
                   ListTile(
                     leading: Icon(Icons.info),
-                    title: const Text('About'),
+                    title: Text('About', style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                     trailing: Icon(Icons.chevron_right),
+                    onTap: () => Navigator.pushNamed(context, Routes.about),
+
                   ),
                   ListTile(
-                    leading: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode),
-                    title: const Text('Dark Mode'),
-                    trailing: Switch(value: false, onChanged: (isDark) => {
+                    leading: Icon(Icons.dark_mode),
+                    title: Text('Dark Mode', style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    trailing: Switch(
+                      value: themeProvider.isDarkMode, 
+                      onChanged: (isDark) => {
                       themeProvider.toggleTheme()
                     }),
+                    onTap: () => themeProvider.toggleTheme()
                   ),
                   ListTile(
                     leading: Icon(Icons.star),
-                    title: const Text('Rate us'),
+                    title: Text('Rate us', style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
                 ],
               ),
@@ -68,8 +83,10 @@ class _MyDrawerState extends State<MyDrawer> {
               padding: EdgeInsets.all(20),
               child: Column(
                 children: [
-                  const Text('version 1.0.0'),
-                  const Text('built 2026-06-01'),
+                  Text('version 1.0.0', style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  Text('last updated: 2026-07-11', style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ),
             ),

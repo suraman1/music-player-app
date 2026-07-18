@@ -21,7 +21,16 @@ class AppTheme {
       bodyColor: AppColors.textPrimary,
       displayColor: AppColors.textPrimary
     ),
-
+    searchBarTheme: SearchBarThemeData(
+      elevation: WidgetStatePropertyAll(0),
+      side: WidgetStatePropertyAll(BorderSide.none),
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: BorderRadius.zero)
+      ),
+      textStyle: WidgetStatePropertyAll(
+        TextStyle(color: AppColors.textPrimary)
+      )
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.darkBackground,
       elevation: 0,
@@ -120,7 +129,16 @@ class AppTheme {
       bodyColor: Colors.black87,
       displayColor: Colors.black87
     ),
-
+    searchBarTheme: SearchBarThemeData(
+      elevation: WidgetStatePropertyAll(0),
+      side: WidgetStatePropertyAll(BorderSide.none),
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      ),
+      textStyle: WidgetStatePropertyAll(
+        TextStyle(color: Colors.black87),
+      ),
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.lightBackground,
       elevation: 0,

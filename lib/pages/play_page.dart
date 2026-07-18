@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:my_app/providers/music_provider.dart';
+import 'package:my_app/providers/slider_provider.dart';
 import 'package:my_app/services/music_service.dart';
 import 'package:my_app/theme/app_styles.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';
@@ -16,7 +16,7 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
   late AnimationController _controller;
-  late MusicProvider _sliderProvider;
+  late MusicService _musicService;
 
   @override
   void initState() {
@@ -25,28 +25,42 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 10),
     );
-    _sliderProvider = MusicProvider(context.read<MusicService>());
 
+    _musicService = context.read<MusicService>();
+    _musicService.addListener(_syncRotation);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncRotation());
+  }
+
+  void _syncRotation() {
+    if (!mounted) return;
+    final isPlaying = _musicService.isPlaying;
+    if (isPlaying && !_controller.isAnimating) {
+      _controller.repeat();
+    } else if (!isPlaying && _controller.isAnimating) {
+      _controller.stop();
+    }
   }
 
   @override
   void dispose() {
+    _musicService.removeListener(_syncRotation);
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final musicService = context.read<MusicService>();
+    final musicService = context.watch<MusicService>();
     final SongModel? song = musicService.currentSong;
+
     if (song == null) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.music_off, size: 64, color: Colors.grey),
-            const SizedBox(height: 20),
-            const Text(
+            Icon(Icons.music_off, size: 64, color: Colors.grey),
+            SizedBox(height: 20),
+            Text(
               'No song is playing',
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
@@ -69,7 +83,7 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                     icon: const Icon(Icons.arrow_back),
                   ),
                   IconButton(
-                    onPressed: () => {},
+                    onPressed: () {},
                     icon: const Icon(Icons.more_vert),
                   ),
                 ],
@@ -79,65 +93,55 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
             Expanded(
               flex: 3,
               child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Selector<MusicService, ({SongModel? song, bool isPlaying})>(
-                  selector: (_, music) => (
-                    song: music.currentSong,
-                    isPlaying: music.isPlaying
+                padding: const EdgeInsets.all(16),
+      
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                        spreadRadius: 20,
+                        blurRadius: 30,
+                      ),
+                    ],
                   ),
-                  builder: (_, state , _) {
-                    if (state.isPlaying && !_controller.isAnimating) {
-                      _controller.repeat();
-                    } else if (!state.isPlaying && _controller.isAnimating) {
-                      _controller.stop();
-                    }
+                  child: AnimatedBuilder(
 
-                    return AnimatedBuilder(
-                      animation: _controller,
-                      builder: (_, _) {
-                        return Transform.rotate(
-                          angle: _controller.value * 2 * pi,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withValues(alpha: 0.3),
-                                  spreadRadius: 20,
-                                  blurRadius: 30,
-                                ),
-                              ],
-                            ),
-                            child: QueryArtworkWidget(
-                              id: song.id,
-                              type: ArtworkType.AUDIO,
-                              nullArtworkWidget: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: [Colors.blue, Colors.purple],
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: const Icon(Icons.music_note, size: 80),
-                                ),
-                              ),
-                              artworkFit: BoxFit.cover,
-                              artworkHeight: 350,
-                              artworkWidth: 350,
-                              artworkQuality: FilterQuality.high,
-                            ),
+                  animation: _controller,
+                  
+                    child: QueryArtworkWidget(
+                      id: song.id,
+                      type: ArtworkType.AUDIO,
+                      nullArtworkWidget: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [Colors.blue, Colors.purple],
                           ),
-                        );
-                      },
-                    );
-                  },
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.music_note, size: 80),
+                        ),
+                      ),
+                      artworkFit: BoxFit.cover,
+                      artworkHeight: 350,
+                      artworkWidth: 350,
+                      artworkQuality: FilterQuality.high,
+                    ),
+                    builder: (_, child) {
+                      return Transform.rotate(
+                        angle: _controller.value * 2 * pi,
+                        child: child,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
 
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Column(
                 children: [
                   Text(
@@ -147,7 +151,7 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    song.artist ?? "Unkown Artist",
+                    song.artist ?? "Unknown Artist",
                     style: AppTextStyles.textTheme.titleSmall,
                     textAlign: TextAlign.center,
                   ),
@@ -164,31 +168,34 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                     builder: (_, snapShot) {
                       final position = snapShot.data ?? Duration.zero;
                       return Consumer<MusicProvider>(
-                        builder: (_, slider, _) {
+                        builder: (_, slider, __) {
                           return Slider(
                             min: 0,
                             max: 1,
                             value: slider.isDragging
                                 ? slider.dragValue
                                 : (musicService.duration.inMilliseconds > 0
-                                      ? (position.inMilliseconds /
-                                                musicService
-                                                    .duration
-                                                    .inMilliseconds)
-                                            .clamp(0.0, 1.0)
-                                      : 0.0),
+                                    ? (position.inMilliseconds /
+                                            musicService
+                                                .duration.inMilliseconds)
+                                        .clamp(0.0, 1.0)
+                                    : 0.0),
+                            
+                            onChangeStart: (value) {
+                              slider.onChangeStart(value);
+                            },
                             onChanged: (value) {
                               slider.onChange(value);
                             },
                             onChangeEnd: (value) {
-                              slider.onChangeEnd(value);
+                              slider.onChangeEnd(musicService, value);
                             },
                           );
                         },
                       );
                     },
                   ),
-              
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Row(
@@ -198,14 +205,13 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                           stream: musicService.positionStream,
                           builder: (_, snapshot) {
                             final position = snapshot.data ?? Duration.zero;
-              
                             return Text(
                               _formatDuration(position),
                               style: AppTextStyles.textTheme.bodySmall,
                             );
                           },
                         ),
-                        StreamBuilder(
+                        StreamBuilder<Duration?>(
                           stream: musicService.durationStream,
                           builder: (_, snapShot) {
                             final duration = snapShot.data ?? Duration.zero;
@@ -227,9 +233,24 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.shuffle)),
+                  Selector<MusicService, bool>(
+                    selector: (_, music) => music.isShuffled,
+                    builder: (_, isShuffled, __) {
+                      return IconButton(
+                        onPressed: () {
+                          musicService.toggleShuffle();
+                        },
+                        icon: Icon(
+                          Icons.shuffle,
+                          color: isShuffled ? Colors.blue : Colors.grey,
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await musicService.playPrevious();
+                    },
                     icon: const Icon(Icons.skip_previous, size: 32),
                   ),
 
@@ -248,7 +269,7 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                       },
                       icon: Selector<MusicService, bool>(
                         selector: (_, music) => music.isPlaying,
-                        builder: (_, isPlaying, _) {
+                        builder: (_, isPlaying, __) {
                           return Icon(
                             isPlaying ? Icons.pause : Icons.play_arrow,
                           );
@@ -257,13 +278,23 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await musicService.playNext();
+                    },
                     icon: const Icon(Icons.skip_next, size: 32),
                   ),
 
-                  IconButton(
-                    onPressed: () {},
-                    icon: _getRepeatIcon(musicService.repeatMode),
+                  Selector<MusicService, RepeatMode>(
+                    selector: (_, music) => music.repeatMode,
+                    builder: (_, mode, __) {
+                      return IconButton(
+
+                        onPressed: () {
+                          musicService.toggleRepeatMode();
+                        },
+                        icon: _getRepeatIcon(mode),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -275,10 +306,18 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   // Favorite
-                  IconButton(
-                    iconSize: 30,
-                    onPressed: musicService.toggleFavorite,
-                    icon: const Icon(Icons.favorite_border),
+                  Selector<MusicService, bool>(
+                    selector: (_, music) => music.isFavorite,
+                    builder: (_, isFavorite, __) {
+                      return IconButton(
+                        iconSize: 30,
+                        onPressed: musicService.toggleFavorite,
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : null,
+                        ),
+                      );
+                    },
                   ),
 
                   // Playlist
@@ -291,7 +330,7 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
                   // Volume
                   Selector<MusicService, bool>(
                     selector: (_, music) => music.isMute,
-                    builder: (_, isMute, _) {
+                    builder: (_, isMute, __) {
                       return IconButton(
                         iconSize: 30,
                         onPressed: () {
@@ -313,12 +352,13 @@ class _PlayPageState extends State<PlayPage> with TickerProviderStateMixin {
   }
 
   Widget _getRepeatIcon(RepeatMode mode) {
-    if (mode == RepeatMode.off) {
-      return const Icon(Icons.repeat, color: Colors.grey);
-    } else if (mode == RepeatMode.all) {
-      return const Icon(Icons.repeat, color: Colors.blue);
-    } else {
-      return const Icon(Icons.repeat_one, color: Colors.blue);
+    switch (mode) {
+      case RepeatMode.off:
+        return const Icon(Icons.repeat, color: Colors.grey);
+      case RepeatMode.all:
+        return const Icon(Icons.repeat, color: Colors.blue);
+      case RepeatMode.one:
+        return const Icon(Icons.repeat_one, color: Colors.blue);
     }
   }
 

@@ -7,6 +7,7 @@ class Routes {
   static const about = '/about';
   static const album = '/album';
   static const albumPlay = '/album-play';
+  static const artistPlay = '/artist-play';
 }
 
 // study go router

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/providers/music_provider.dart';
 import 'package:my_app/routes/routes.dart';
 import 'package:my_app/services/music_service.dart';
 import 'package:on_audio_query_pluse/on_audio_query.dart';

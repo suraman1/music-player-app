@@ -32,14 +32,8 @@ class _AlbumPlayState extends State<AlbumPlay> {
   Future<void> _loadSongs() async {
     try {
       final musicService = context.read<MusicService>();
-
       final loadedSongs = musicService.getAllSongsFromAlbum(widget.album);
-      debugPrint('Album: ${widget.album.album}');
-      debugPrint('Songs found: ${loadedSongs.length}');
 
-      for (final song in loadedSongs) {
-        debugPrint(song.title);
-      }
       if (!mounted) return;
 
       setState(() {
@@ -100,15 +94,14 @@ class _AlbumPlayState extends State<AlbumPlay> {
                       ),
                       const SizedBox(height: 12),
                       Selector<MusicService, bool>(
-                        selector: (_, song) => song.isMute,
-                        builder: (_, isMute, _) {
+                        selector: (_, song) => song.isPlaying,
+                        builder: (_, isPlaying , _) {
                           final musicService = context.read<MusicService>();
                           return ElevatedButton.icon(
                             onPressed: songs.isEmpty
                                 ? null
                                 : () => musicService.playAll(songs),
-                            icon: musicService.isPlaying
-                                ? const Icon(Icons.pause)
+                            icon: isPlaying && musicService.currentPlaylist == songs                                ? const Icon(Icons.pause)
                                 : const Icon(Icons.play_arrow),
                             label: const Text('Play All'),
                           );
@@ -196,7 +189,7 @@ class _AlbumPlayState extends State<AlbumPlay> {
                                 },
                                 icon: Icon(
                                   musicService.isPlaying &&
-                                          musicService.currentSong?.id ==
+                                          currentSong?.id ==
                                               song.id
                                       ? Icons.pause
                                       : Icons.play_arrow,

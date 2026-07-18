@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:my_app/providers/navigation_provider.dart';
 import 'package:my_app/screens/home_screen.dart';
 import 'package:my_app/screens/library_screen.dart';
-import 'package:my_app/screens/profile_screen.dart';
 import 'package:my_app/screens/search_screen.dart';
 import 'package:my_app/services/music_service.dart';
 import 'package:share_plus/share_plus.dart';
@@ -22,7 +21,6 @@ class _HomePageState extends State<HomePage> {
     HomeScreen(),
     SearchScreen(),
     LibraryScreen(),
-    ProfileScreen(),
   ];
 
   @override
@@ -55,7 +53,6 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.library_add),
             label: 'Library',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

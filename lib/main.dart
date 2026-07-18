@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/providers/music_provider.dart';
+import 'package:my_app/providers/profile_provider.dart';
+import 'package:my_app/providers/search_provider.dart';
+import 'package:my_app/providers/slider_provider.dart';
 import 'package:my_app/providers/navigation_provider.dart';
 import 'package:my_app/providers/theme_provider.dart';
 import 'package:my_app/routes/router.dart';
@@ -13,8 +15,11 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => MusicService()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => NavigationProvider())
-        ],
+        ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        ChangeNotifierProvider(create: (_) => MusicProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider())
+      ],
       child: const MyApp(),
     ),
   );

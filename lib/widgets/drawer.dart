@@ -6,14 +6,9 @@ import 'package:my_app/providers/theme_provider.dart';
 import 'package:my_app/routes/routes.dart';
 import 'package:provider/provider.dart';
 
-class MyDrawer extends StatefulWidget {
+class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
-  @override
-  State<MyDrawer> createState() => _MyDrawerState();
-}
-
-class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();

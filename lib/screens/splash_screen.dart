@@ -20,7 +20,6 @@ class _SplashScreenState extends State<SplashScreen>
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadSongs();
-      debugPrint('In init state');
     });
   }
 
@@ -48,15 +47,13 @@ class _SplashScreenState extends State<SplashScreen>
       if (!mounted) return;
 
       if (musicService.permissionGranted) {
-        debugPrint('to go home ');
         Navigator.pushReplacementNamed(context, Routes.home);
       } else {
         if (!mounted) return;
-        debugPrint('debug show ');
         _showPermissionDeniedDialog();
       }
     } catch (e) {
-      debugPrint('Splash $e');
+      debugPrint('Error on splash $e');
     }
   }
 
